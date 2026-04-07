@@ -1,0 +1,12 @@
+# Python/CDK
+__pycache__/
+*.pyc
+.venv/
+infra/.venv/
+
+# CDK outputs
+cdk.out/
+infra/cdk.out/
+
+# Local team env overrides
+.env.team
