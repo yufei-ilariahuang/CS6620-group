@@ -25,9 +25,17 @@ class ApiStack(Construct):
             ),
         )
 
+        # Create Cognito authorizer
+        cognito_authorizer = apigw.CognitoUserPoolsAuthorizer(
+            self,
+            "CognitoAuthorizer",
+            cognito_user_pools=[user_pool],
+        )
+
         # Store references for cross-stack access
         self.api = api
         self.user_pool = user_pool
+        self.cognito_authorizer = cognito_authorizer
 
         # Outputs
         CfnOutput(self, "ApiEndpoint", value=api.url)

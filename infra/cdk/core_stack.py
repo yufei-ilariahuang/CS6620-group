@@ -32,7 +32,7 @@ class CoreStack(Stack):
             project_prefix=project_prefix,
         )
 
-        # 4. Create Compute stack (Lambda)
+        # 4. Create Compute stack (Lambda + SQS)
         compute_stack = ComputeStack(
             self,
             "ComputeStack",
@@ -41,10 +41,30 @@ class CoreStack(Stack):
             inventory_table_arn=storage_stack.inventory_table.table_arn,
         )
 
-        # 5. Wire Product Lambda to API Gateway
+        # 5. Wire Product Lambda to GET /products (no auth)
         product_integration = apigw.LambdaIntegration(compute_stack.product_lambda)
         products_resource = api_stack.api.root.add_resource("products")
         products_resource.add_method("GET", product_integration)
+
+        # 6. Wire Subscription Lambda to POST /subscriptions (Cognito auth)
+        subscription_integration = apigw.LambdaIntegration(compute_stack.subscription_lambda)
+        subscriptions_resource = api_stack.api.root.add_resource("subscriptions")
+        subscriptions_resource.add_method(
+            "POST",
+            subscription_integration,
+            authorizer=api_stack.cognito_authorizer,
+            authorization_type=apigw.AuthorizationType.COGNITO,
+        )
+
+        # 7. Wire Restock Lambda to POST /restock (Cognito auth, admin check in Lambda)
+        restock_integration = apigw.LambdaIntegration(compute_stack.restock_lambda)
+        restock_resource = api_stack.api.root.add_resource("restock")
+        restock_resource.add_method(
+            "POST",
+            restock_integration,
+            authorizer=api_stack.cognito_authorizer,
+            authorization_type=apigw.AuthorizationType.COGNITO,
+        )
 
         # Output summary
         CfnOutput(self, "ProjectPrefix", value=project_prefix)
