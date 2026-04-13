@@ -1,0 +1,16 @@
+project:
+  stack_name: your-stack-name
+  aws_profile: your-aws-profile
+  aws_region: your-aws-region
+  user_pool_id: your-user-pool-id
+frontend:
+  api_base_url: https://your-api-id.execute-api.your-aws-region.amazonaws.com/prod/
+  cognito_region: your-aws-region
+  cognito_app_client_id: your-cognito-app-client-id
+backend:
+  ses_from_email: your-verified-ses-sender@example.com
+notes:
+  - Update this file after each fresh deploy if API Gateway or Cognito resources are recreated.
+  - The frontend now loads API/Cognito values from this YAML at runtime.
+  - The CDK notification Lambda now reads `backend.ses_from_email` from this YAML during synth/deploy.
+  - Run `python scripts/sync_app_config.py` after each deploy to refresh stack outputs automatically.

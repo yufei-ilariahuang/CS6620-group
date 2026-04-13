@@ -45,6 +45,13 @@ class CoreStack(Stack):
         product_integration = apigw.LambdaIntegration(compute_stack.product_lambda)
         products_resource = api_stack.api.root.add_resource("products")
         products_resource.add_method("GET", product_integration)
+        create_product_integration = apigw.LambdaIntegration(compute_stack.create_product_lambda)
+        products_resource.add_method(
+            "POST",
+            create_product_integration,
+            authorizer=api_stack.cognito_authorizer,
+            authorization_type=apigw.AuthorizationType.COGNITO,
+        )
 
         # 6. Wire Subscription Lambda to POST /subscriptions (Cognito auth)
         subscription_integration = apigw.LambdaIntegration(compute_stack.subscription_lambda)

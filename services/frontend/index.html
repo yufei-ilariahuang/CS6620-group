@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restock Console</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <section id="authScreen" class="screen auth-screen">
+      <div class="auth-shell">
+        <div class="brand-panel">
+          <p class="eyebrow">CS6620 Inventory Restock Notification</p>
+          <h1>Restock Console</h1>
+          <p class="hero-text">
+            Sign in as a normal user to subscribe to out-of-stock items, or sign in
+            as an admin to restock inventory and trigger notifications.
+          </p>
+        </div>
+
+        <div class="auth-panel">
+          <div id="loginView" class="view active">
+            <h2>Sign In</h2>
+            <label for="loginEmail">Email</label>
+            <input id="loginEmail" type="email" placeholder="you@example.com">
+            <label for="loginPassword">Password</label>
+            <input id="loginPassword" type="password" placeholder="Enter password">
+            <button id="signInBtn" class="primary" type="button">Sign In</button>
+            <button id="goSignUpBtn" class="secondary" type="button">Sign Up</button>
+            <div id="loginChallengeBlock" class="challenge-block hidden">
+              <label for="loginNewPassword">New Password Required</label>
+              <input id="loginNewPassword" type="password" placeholder="Set a new password">
+              <button id="loginChallengeBtn" class="primary" type="button">Submit New Password</button>
+            </div>
+            <pre id="authOutput" class="output compact"></pre>
+          </div>
+
+          <div id="signupView" class="view">
+            <h2>Create Account</h2>
+            <label for="signupEmail">Email</label>
+            <input id="signupEmail" type="email" placeholder="you@example.com">
+            <label for="signupPassword">Password</label>
+            <input id="signupPassword" type="password" placeholder="Create a password">
+            <button id="signUpBtn" class="primary" type="button">Create Account</button>
+            <button id="backToSignInBtn" class="secondary" type="button">Back To Sign In</button>
+            <pre id="signupOutput" class="output compact"></pre>
+          </div>
+
+          <div id="confirmView" class="view">
+            <h2>Confirm Email</h2>
+            <label for="confirmEmail">Email</label>
+            <input id="confirmEmail" type="email" placeholder="you@example.com">
+            <label for="confirmCode">Verification Code</label>
+            <input id="confirmCode" type="text" placeholder="Enter email code">
+            <button id="confirmBtn" class="primary" type="button">Confirm Account</button>
+            <button id="confirmBackBtn" class="secondary" type="button">Back To Sign In</button>
+            <pre id="confirmOutput" class="output compact"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="userScreen" class="screen app-screen hidden">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">User Mode</p>
+          <h2>Subscribe To Restock Alerts</h2>
+          <p id="userSummary" class="hero-text"></p>
+        </div>
+        <div class="header-actions">
+          <label for="apiBase">API Base URL</label>
+          <input id="apiBase" type="text" value="">
+          <button id="userRefreshBtn" class="secondary" type="button">Refresh Products</button>
+          <button id="logoutBtn" class="primary" type="button">Log Out</button>
+        </div>
+      </header>
+
+      <main class="user-layout">
+        <section class="panel inventory-panel">
+          <div class="panel-head">
+            <h3>Inventory Board</h3>
+            <p>Click an item to subscribe.</p>
+          </div>
+          <div id="userProductsGrid" class="products-grid"></div>
+        </section>
+
+        <section class="panel action-panel">
+          <div class="panel-head">
+            <h3>Subscription</h3>
+            <p>The selected item will be subscribed using the signed-in user.</p>
+          </div>
+          <label for="userSelectedItemInput">Selected Item ID</label>
+          <input id="userSelectedItemInput" type="text" readonly placeholder="Click a product card to select it">
+          <button id="userSubscribeBtn" class="primary" type="button">Subscribe</button>
+          <p id="userActionMessage" class="inline-message muted">Choose an out-of-stock product first.</p>
+        </section>
+      </main>
+    </section>
+
+    <section id="adminScreen" class="screen app-screen hidden">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Admin Mode</p>
+          <h2>Restock Inventory</h2>
+          <p id="adminSummary" class="hero-text"></p>
+        </div>
+        <div class="header-actions">
+          <label for="adminApiBaseMirror">API Base URL</label>
+          <input id="adminApiBaseMirror" type="text" readonly>
+          <button id="adminRefreshBtn" class="secondary" type="button">Refresh Products</button>
+          <button id="adminLogoutBtn" class="primary" type="button">Log Out</button>
+        </div>
+      </header>
+
+      <main class="user-layout">
+        <section class="panel inventory-panel">
+          <div class="panel-head">
+            <h3>Inventory Board</h3>
+            <p>Click an item, then set the new stock count.</p>
+          </div>
+          <div id="adminProductsGrid" class="products-grid"></div>
+        </section>
+
+        <section class="panel action-panel">
+          <div class="panel-head">
+            <h3>Restock Action</h3>
+            <p>The signed-in admin can update stock and trigger email delivery.</p>
+          </div>
+          <label for="adminSelectedItemInput">Selected Item ID</label>
+          <input id="adminSelectedItemInput" type="text" readonly placeholder="Click a product card to select it">
+          <label for="adminRestockCount">New Stock Count</label>
+          <input id="adminRestockCount" type="number" min="0" step="1" value="10">
+          <button id="adminRestockBtn" class="primary danger" type="button">Restock Item</button>
+          <p id="adminActionMessage" class="inline-message muted">Choose a product, then enter the new stock count.</p>
+        </section>
+
+        <section class="panel action-panel">
+          <div class="panel-head">
+            <h3>Upload Product</h3>
+            <p>Create a new inventory item without leaving the admin dashboard.</p>
+          </div>
+          <label for="adminNewItemId">New Item ID</label>
+          <input id="adminNewItemId" type="text" placeholder="item-010">
+          <label for="adminNewItemStock">Initial Stock Count</label>
+          <input id="adminNewItemStock" type="number" min="0" step="1" value="0">
+          <button id="adminCreateItemBtn" class="primary" type="button">Upload Product</button>
+          <p id="adminCreateItemMessage" class="inline-message muted">Enter a new item ID and initial stock count.</p>
+        </section>
+      </main>
+    </section>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
